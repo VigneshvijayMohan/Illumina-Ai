@@ -1,11 +1,124 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="chat-container">
-    <div class="messages" id="chat-messages"></div>
-    <div class="input-group">
-        <input type="text" id="user-input" class="form-control" placeholder="Type your message...">
-        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+<div class="col-md-5 mb-2">
+    <a href="{% url 'home' %}" class="btn btn-outline-primary padding:20px ">
+        Home
+    </a>
+</div>
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Chat with Assistant</h5>
+            {% if file_info %}
+            <span class="badge bg-info">Using: {{ file_info.filename }}</span>
+            {% else %}
+            <span class="badge bg-warning">No file uploaded</span>
+            {% endif %}
+        </div>
+        <div class="card-body" style="height: 400px; overflow-y: auto;" id="chat-box">
+            {% if file_info %}
+            <div class="text-start mb-2">
+                <span class="badge bg-secondary">I'm ready to help you with your file: {{ file_info.filename }}</span>
+            </div>
+            {% else %}
+            <div class="text-start mb-2">
+                <span class="badge bg-secondary">Welcome! You haven't uploaded a file yet. <a href="{% url 'file_upload' %}" class="text-white">Upload a file</a> to get started.</span>
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <form id="chat-form">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="user-input" placeholder="Type your message..." required>
+                    <button class="btn btn-primary" type="submit">Send</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+<style>
+    /* Chat styling */
+    .message-container {
+        display: flex;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .user-message-container {
+        justify-content: flex-end;
+    }
+    
+    .assistant-message {
+        background-color: #f1f1f1;
+        color: #333;
+        border-radius: 18px;
+        padding: 10px 15px;
+        max-width: 75%;
+        word-wrap: break-word;
+    }
+    
+    .user-message {
+        background-color: #0d6efd;
+        color: white;
+        border-radius: 18px;
+        padding: 10px 15px;
+        max-width: 75%; 
+        word-wrap: break-word;
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Store file info in JavaScript variables
+const fileInfo = {% if file_info %}{{ file_info|safe }}{% else %}null{% endif %};
+
+document.getElementById("chat-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const inputBox = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+    const userMessage = inputBox.value;
+
+    chatBox.innerHTML += `<div class="text-end mb-2"><span class="badge bg-primary">${userMessage}</span></div>`;
+    inputBox.value = "";
+
+    const response = await fetch("message/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ 
+            message: userMessage,
+            // We don't need to send the file path explicitly since we're using sessions
+        })
+    });
+
+    const data = await response.json();
+    chatBox.innerHTML += `<div class="text-start mb-2"><span class="badge bg-secondary">${data.reply}</span></div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+});
+</script>
+<style>
+    /* Typing indicator animation */
+    .typing-indicator span {
+        animation: blink 1.5s infinite;
+        animation-fill-mode: both;
+    }
+    
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes blink {
+        0% { opacity: 0.1; }
+        20% { opacity: 1; }
+        100% { opacity: 0.1; }
+    }
+</style>
 {% endblock %}
