@@ -1,0 +1,22 @@
+# Core LangChain dependencies
+langchain>=0.1.0
+langchain-community
+langchain-openai
+langchain-chroma
+
+# PDF processing
+pypdf
+
+# Vector database
+chromadb
+
+# OpenAI
+openai
+
+# Django backend
+django
+
+
+
+# Any utility packages
+numpy
