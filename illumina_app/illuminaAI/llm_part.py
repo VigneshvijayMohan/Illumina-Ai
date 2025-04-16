@@ -6,7 +6,7 @@ def llm_process(question, vectordb):
 
     llm = ChatOpenAI(
         model="gpt-3.5-turbo",  # or "gpt-4" if available
-        openai_api_key="sk-proj-ysqAJyMK16roCxEn0fgCT3BlbkFJL5X7AXApylbw6DE9oWD3"
+        openai_api_key="your-openai-key"
     )
 
     # User question

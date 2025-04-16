@@ -7,7 +7,7 @@ import os
 def embed(docs, dbname):
     embedding = OpenAIEmbeddings(
         model="text-embedding-3-large",
-        openai_api_key="sk-proj-ysqAJyMK16roCxEn0fgCT3BlbkFJL5X7AXApylbw6DE9oWD3"
+        openai_api_key="your-openai-key"
     )
 
     #VectorDB
@@ -31,3 +31,4 @@ def embed(docs, dbname):
             embedding_function=embedding
         )
     return vectordb
+
