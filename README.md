@@ -55,3 +55,7 @@
    - Combined with query and sent to OpenAI LLM
    - Response returned and shown in UI
 
+
+
+This is a private project done by the user
+
